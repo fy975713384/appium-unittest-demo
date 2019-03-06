@@ -14,7 +14,6 @@ from handler.user_handler import UserPageHandler, LoginPageHandler
 
 
 class Testup(unittest.TestCase):
-
     ORDER = None
 
     @classmethod
@@ -22,16 +21,16 @@ class Testup(unittest.TestCase):
         yaml = OperateYAML()
         ST.DEVICENAME = yaml.get_value(f'user_info_{cls.ORDER}', 'deviceName')
         ST.PORT = yaml.get_value(f'user_info_{cls.ORDER}', 'port')
-        ST.APP_PATH = f'{root_path}\\app\\jrtt.apk'
+        ST.APP_PATH = f'{root_path}\\app\\com.codemao.dan_2.0.1_11.apk'
         cls.policy = PolicyPopupHandler()
         cls.tab = TabBarHandler()
         cls.user = UserPageHandler()
         cls.login = LoginPageHandler()
 
     def test_case01(self):
-        '''
+        """
         验证首次登录时，打开注册页面
-        '''
+        """
         self.policy.accept_policy()
         self.tab.switch_user_page()
         self.user.touch_login_button()
