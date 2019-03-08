@@ -1,5 +1,6 @@
 import sys
 import os
+
 root_path = os.path.split(os.path.dirname(__file__))[0]
 sys.path.append(root_path)
 import unittest
@@ -8,13 +9,14 @@ from multiprocessing import Process
 from conf.setting import Setting as ST
 from util.server import Server
 from util.operate_yaml import OperateYAML
-from driver.base_driver import BaseDriver
 from business.guide import Guide
 from business.tab import TabBar
 from business.user import User
+from driver.base_driver import BaseDriver
 
 
-class Testup(unittest.TestCase):
+class TestUser(unittest.TestCase):
+    driver = None
     ORDER = None
 
     @classmethod
@@ -23,16 +25,15 @@ class Testup(unittest.TestCase):
         ST.DEVICENAME = yaml.get_value(f'user_info_{cls.ORDER}', 'deviceName')
         ST.PORT = yaml.get_value(f'user_info_{cls.ORDER}', 'port')
         ST.APP_PATH = f'{root_path}\\app\\com.codemao.dan_2.0.1_11.apk'
+        cls.driver = BaseDriver(ST.DEVICENAME, ST.PORT, ST.APP_PATH).driver
         cls.guide = Guide()
-        cls.tab = TabBar
+        cls.tab = TabBar()
         cls.user = User()
 
     @classmethod
     def tearDownClass(cls):
-        print("123")
-        driver = BaseDriver(ST.DEVICENAME, ST.PORT, ST.APP_PATH).driver
-        driver.quit()
-        print("234")
+        cls.driver.remove_app('com.codemao.dan')
+        cls.driver.quit()
 
     def test_case01(self):
         self.guide.skip_guide()
@@ -42,9 +43,9 @@ class Testup(unittest.TestCase):
 
 
 def get_case(order):
-    Testup.ORDER = order
+    TestUser.ORDER = order
     suite = unittest.TestSuite()
-    suite.addTest(Testup('test_case01'))
+    suite.addTest(TestUser('test_case01'))
     unittest.TextTestRunner().run(suite)
 
 

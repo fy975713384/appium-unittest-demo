@@ -18,7 +18,8 @@ class BaseDriver:
             "app": self.app_path,
             "autoGrantPermissions": True,
             "unicodeKeyboard": True,
-            "resetKeyboard": True
+            "resetKeyboard": True,
+            "clearSystemFiles": True
         }
 
         driver = webdriver.Remote(
