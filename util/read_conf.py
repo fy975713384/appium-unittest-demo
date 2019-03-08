@@ -13,7 +13,7 @@ class ReadConf:
 
     def _read_conf(self):
         read_conf = ConfigParser()
-        read_conf.read(self.file_path)
+        read_conf.read(self.file_path, encoding='utf-8')
         return read_conf
 
     def get_value(self, sec, key):

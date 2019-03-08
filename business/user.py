@@ -1,20 +1,18 @@
-# from handler.user_handler import UserPageHandler
-# from handler.user_handler import LoginPageHandler
-# from handler.user_handler import RegistPageHandler
+from handler.user_handler import UserPageHandler
+from handler.user_handler import LoginPageHandler
+from handler.user_handler import RegPageHandler
 
 
-# class User:
-#     def __init__(self):
-#         self.user = UserPageHandler()
-#         self.login = LoginPageHandler()
-#         self.
+class User:
+    def __init__(self):
+        self._user = UserPageHandler()
+        self._login = LoginPageHandler()
+        self._register = RegPageHandler()
 
-#     def open_login_py_pw_page(self):
-#         '''
-#         功能：打开用户密码登录页
-#         前提：已正常打开未登录用户信息页
-#         '''
-#         self.user.touch_login_button()
-#         title = self.login.get_title_text()
-#         if title = '账号注册':
-#             self.login.
+    def open_login_page(self):
+        self._user.touch_user_head()
+
+    def login_by_password(self, username: str, password: str):
+        self._login.input_username(username)
+        self._login.input_password(password)
+        self._login.touch_login_button()

@@ -1,5 +1,4 @@
 from appium import webdriver
-import time
 from util.singleton import singleton
 
 
@@ -17,12 +16,14 @@ class BaseDriver:
             "platformName": "Android",
             "deviceName": self.deviceName,
             "app": self.app_path,
+            "autoGrantPermissions": True,
+            "unicodeKeyboard": True,
+            "resetKeyboard": True
         }
 
         driver = webdriver.Remote(
             f'http://localhost:{self.port}/wd/hub', desired_caps)
-        driver.implicitly_wait(20)
-        time.sleep(7)
+        driver.implicitly_wait(10)
         return driver
 
     def _ios_driver(self):
