@@ -7,7 +7,7 @@ class ReadConf:
 
     def __init__(self):
         self.file_path = os.path.split(os.path.dirname(__file__))[
-            0] + '\\conf\\LocalElement.ini'
+            0] + '/conf/LocalElement.ini'
         # print(self.file_path)
         self.data = self._read_conf()
 

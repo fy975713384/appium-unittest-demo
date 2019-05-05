@@ -1,13 +1,17 @@
-from util.dos_cmd import DosCmd
+from util.command import Command
 
 
 class Port:
 
     def port_is_used(self, port_num):
-        # 判断端口是否被占用
-        self.dos = DosCmd()
-        command = 'netstat -ano | findstr ' + str(port_num)
-        result = self.dos.get_cmd_result(command)
+        """
+        判断端口是否被占用
+        :param port_num:
+        :return:
+        """
+        _cmd = Command()
+        command = f'{Command.CHECK_PORT} {str(port_num)}'
+        result = _cmd.get_cmd_result(command)
         if len(result) > 0:
             flag = True
         else:
@@ -15,11 +19,11 @@ class Port:
         return flag
 
     def create_port_list(self, start_port, device_list):
-        '''
-        生成可用端口
+        """
+        生成可用端口列表
         @parameter start_port
         @parameter device_list
-        '''
+        """
         port_list = []
         if device_list is not None:
             while len(port_list) != len(device_list):

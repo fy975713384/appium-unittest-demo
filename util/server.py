@@ -1,28 +1,30 @@
-from util.dos_cmd import DosCmd
+from util.command import Command
 from util.port import Port
 from util.operate_yaml import OperateYAML
 from multiprocessing import Process
+import platform
 
 
 class Server:
 
     def __init__(self):
-        self.dos = DosCmd()
+        self.cmd = Command()
         self.operate_yaml = OperateYAML()
         self.device_list = self._get_devices()
+        self._platform = platform.system().lower()
 
     def _get_devices(self):
         """
         获取设备信息
         """
         devices_list = []
-        result_list = self.dos.get_cmd_result('adb devices')
+        result_list = self.cmd.get_cmd_result(Command.LIST_ADB_DEVICES)
         if len(result_list) >= 2:
             for i in result_list:
                 if 'List' in i:
                     continue
                 devices_info = i.split('\t')
-                if devices_info[1] == 'device':
+                if devices_info[1].lower() == 'device':
                     devices_list.append(devices_info[0])
             return devices_list
         else:
@@ -33,7 +35,7 @@ class Server:
         创建可用端口
         """
         port = Port()
-        port_list = []
+        # port_list = []
         port_list = port.create_port_list(start_port, self.device_list)
         return port_list
 
@@ -47,28 +49,28 @@ class Server:
         port = str(appium_port_list[index])
         bp = str(bootstrap_port_list[index])
         device = device_list[index]
-        command = f"""appium -p {port} -bp {bp} -U {device} \
-        --no-reset --session-override
-        """
+        command = f'{Command.START_APPIUM} -p {port} -bp {bp} -U {device} --no-reset --session-override'
         self.operate_yaml.write_data(index, port, bp, device)
         return command
 
     def start_server_ordinal(self, index):
         command = self.create_command_ordinal(index)
-        self.dos.excute_cmd(command)
+        self.cmd.exec_cmd(command)
 
-    def stop_server(self, name):
-        if name[-4:] != '.exe':
-            name += '.exe'
-        server_list = self.dos.get_cmd_result(f'tasklist | findstr {name}')
+    def stop_server(self):
+        server_list = self.cmd.get_cmd_result(Command.LIST_RUNNING_SERVER)
         if len(server_list) > 0:
-            self.dos.excute_cmd(f'taskkill -F -PID {name}')
+            if self._platform == 'windows':
+                self.cmd.exec_cmd(Command.KILL_PROCESS)
+            else:
+                for pid in server_list:
+                    self.cmd.exec_cmd(f'{Command.KILL_PROCESS} {pid}')
 
     def start_appium(self):
         """
         功能：根据线程启动 appium 服务
         """
-        self.stop_server('node.exe')
+        self.stop_server()
         self.operate_yaml.clear_data()
 
         for i in range(len(self.device_list)):

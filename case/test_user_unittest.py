@@ -1,7 +1,7 @@
 import sys
 import os
 
-root_path = os.path.split(os.path.dirname(__file__))[0]
+root_path = os.path.split(os.path.dirname(os.path.abspath(__file__)))[0]
 sys.path.append(root_path)
 import unittest
 import time
@@ -24,7 +24,8 @@ class TestUser(unittest.TestCase):
         yaml = OperateYAML()
         ST.DEVICENAME = yaml.get_value(f'user_info_{cls.ORDER}', 'deviceName')
         ST.PORT = yaml.get_value(f'user_info_{cls.ORDER}', 'port')
-        ST.APP_PATH = f'{root_path}\\app\\com.codemao.dan_2.0.1_11.apk'
+        ST.APP_PATH = f'{root_path}/app/com.codemao.dan_2.0.1_11.apk'
+        print(ST.APP_PATH)
         cls.driver = BaseDriver(ST.DEVICENAME, ST.PORT, ST.APP_PATH).driver
         cls.guide = Guide()
         cls.tab = TabBar()

@@ -6,7 +6,7 @@ class OperateYAML:
 
     def __init__(self):
         self.yaml_path = os.path.split(os.path.dirname(__file__))[
-            0] + '\\conf\\DriverConf.yml'
+            0] + '/conf/DriverConf.yml'
 
     def read_data(self):
         with open(self.yaml_path) as f:
