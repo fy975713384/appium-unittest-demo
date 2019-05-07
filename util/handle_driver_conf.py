@@ -1,12 +1,16 @@
 import yaml
 import os
+from util.singleton import singleton
 
 
-class OperateYAML:
+@singleton
+class HandleDriverConf:
 
-    def __init__(self):
-        self.yaml_path = os.path.split(os.path.dirname(__file__))[
-            0] + '/conf/DriverConf.yml'
+    def __init__(self, file_path=None):
+        if file_path is None:
+            self.yaml_path = os.path.split(os.path.dirname(os.path.abspath(__file__)))[0] + '/conf/DriverConf.yml'
+        else:
+            self.yaml_path = file_path
 
     def read_data(self):
         with open(self.yaml_path) as f:

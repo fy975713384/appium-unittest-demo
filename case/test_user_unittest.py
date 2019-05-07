@@ -8,11 +8,12 @@ import time
 from multiprocessing import Process
 from conf.setting import Setting as ST
 from util.server import Server
-from util.operate_yaml import OperateYAML
+from util.handle_driver_conf import HandleDriverConf
 from business.guide import Guide
 from business.tab import TabBar
 from business.user import User
 from driver.base_driver import BaseDriver
+import HTMLTestRunner
 
 
 class TestUser(unittest.TestCase):
@@ -21,11 +22,10 @@ class TestUser(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        yaml = OperateYAML()
-        ST.DEVICENAME = yaml.get_value(f'user_info_{cls.ORDER}', 'deviceName')
-        ST.PORT = yaml.get_value(f'user_info_{cls.ORDER}', 'port')
+        driver_conf = HandleDriverConf()
+        ST.DEVICENAME = driver_conf.get_value(f'user_info_{cls.ORDER}', 'deviceName')
+        ST.PORT = driver_conf.get_value(f'user_info_{cls.ORDER}', 'port')
         ST.APP_PATH = f'{root_path}/app/com.codemao.dan_2.0.1_11.apk'
-        print(ST.APP_PATH)
         cls.driver = BaseDriver(ST.DEVICENAME, ST.PORT, ST.APP_PATH).driver
         cls.guide = Guide()
         cls.tab = TabBar()
@@ -47,14 +47,17 @@ def get_case(order):
     TestUser.ORDER = order
     suite = unittest.TestSuite()
     suite.addTest(TestUser('test_case01'))
-    unittest.TextTestRunner().run(suite)
+    html_file = f'{root_path}/report/HTMLReport{order}.html'
+    with open(html_file, "wb") as fp:
+        HTMLTestRunner.HTMLTestRunner(fp).run(suite)
 
 
 if __name__ == "__main__":
     server = Server()
     server.start_appium()
-    time.sleep(5)
+    time.sleep(10)
 
     for i in range(len(server.device_list)):
+        print(i)
         t = Process(target=get_case, args=(i,))
         t.start()

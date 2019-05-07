@@ -1,6 +1,6 @@
 from util.command import Command
 from util.port import Port
-from util.operate_yaml import OperateYAML
+from util.handle_driver_conf import HandleDriverConf
 from multiprocessing import Process
 import platform
 
@@ -9,7 +9,7 @@ class Server:
 
     def __init__(self):
         self.cmd = Command()
-        self.operate_yaml = OperateYAML()
+        self.handle_driver = HandleDriverConf()
         self.device_list = self._get_devices()
         self._platform = platform.system().lower()
 
@@ -34,9 +34,8 @@ class Server:
         """
         创建可用端口
         """
-        port = Port()
         # port_list = []
-        port_list = port.create_port_list(start_port, self.device_list)
+        port_list = Port().create_port_list(start_port, self.device_list)
         return port_list
 
     def create_command_ordinal(self, index):
@@ -50,12 +49,16 @@ class Server:
         bp = str(bootstrap_port_list[index])
         device = device_list[index]
         command = f'{Command.START_APPIUM} -p {port} -bp {bp} -U {device} --no-reset --session-override'
-        self.operate_yaml.write_data(index, port, bp, device)
+        self.handle_driver.write_data(index, port, bp, device)
         return command
 
     def start_server_ordinal(self, index):
         command = self.create_command_ordinal(index)
         self.cmd.exec_cmd(command)
+        while True:
+            port = self.handle_driver.get_value(f'user_info_{str(index)}', 'port')
+            if Port().port_is_used(port):
+                break
 
     def stop_server(self):
         server_list = self.cmd.get_cmd_result(Command.LIST_RUNNING_SERVER)
@@ -68,10 +71,10 @@ class Server:
 
     def start_appium(self):
         """
-        功能：根据线程启动 appium 服务
+        功能：根据线程启动 Appium 服务
         """
         self.stop_server()
-        self.operate_yaml.clear_data()
+        self.handle_driver.clear_data()
 
         for i in range(len(self.device_list)):
             appium_start = Process(

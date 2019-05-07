@@ -3,6 +3,9 @@ import platform
 
 
 class Command:
+    """
+    操作系统命令
+    """
     LIST_ADB_DEVICES = 'adb devices'
     START_APPIUM = 'appium'
     if platform.system().lower() == 'Windows':
@@ -12,7 +15,7 @@ class Command:
     else:
         LIST_RUNNING_SERVER = "ps -ef | grep 'node' | awk '/appium/{print $2}'"
         KILL_PROCESS = "kill -9 "
-        CHECK_PORT = 'lsof -i| grep '
+        CHECK_PORT = 'lsof -i:'
 
     @classmethod
     def get_cmd_result(cls, com: str) -> list:
